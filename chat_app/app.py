@@ -18,13 +18,13 @@ def handle_client_message(data):
     user = data.get("user", "Anonymous")
     text = data.get("text", "")
     print(f"[Browser] {user}: {text}")
-    socketio.emit("chat_message", f"<span class='client'>{user}:</span> {text}")
+    socketio.emit("chat_message", {"user": user, "text": text, "sender": "client"})
 
 def console_input_thread():
     """Reads messages from terminal and sends to all clients."""
     while True:
         msg = input("Server: ")
-        socketio.emit("chat_message", f"<span class='server'>Server:</span> {msg}")
+        socketio.emit("chat_message", {"user": "Server", "text": msg, "sender": "server"})
 
 def get_ip():
     """Find local IP address."""

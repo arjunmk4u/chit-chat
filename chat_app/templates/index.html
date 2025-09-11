@@ -1,10 +1,13 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
   <head>
-    <title>WeChat Live</title>
+    <title>Chit - Chat Live</title>
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
     <style>
-      body { font-family: Arial, sans-serif; margin: 0; }
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+      }
 
       /* Navbar */
       .navbar {
@@ -39,9 +42,15 @@
         margin: 20px;
         background: #fafafa;
       }
-      .msg { margin: 5px 0; }
-      .server { color: blue; }
-      .client { color: green; }
+      .msg {
+        margin: 5px 0;
+      }
+      .server {
+        color: blue;
+      }
+      .client {
+        color: green;
+      }
 
       /* Input area */
       .input-area {
@@ -67,15 +76,22 @@
         document.getElementById("notifDot").style.display = "none";
       }
 
-      socket.on("chat_message", function(msg) {
+      socket.on("chat_message", function (data) {
         var chat = document.getElementById("chat");
         var div = document.createElement("div");
-        div.className = "msg";
-        div.innerHTML = msg;
+        div.className = "msg " + data.sender;
+
+        if (data.text.includes("\n")) {
+          // Preserve formatting for multi-line
+          div.innerHTML = `<span class="${data.sender}">${data.user}:</span>\n<pre>${data.text}</pre>`;
+        } else {
+          // Single-line normal message
+          div.innerHTML = `<span class="${data.sender}">${data.user}:</span> ${data.text}`;
+        }
+
         chat.appendChild(div);
         chat.scrollTop = chat.scrollHeight;
 
-        // Only show dot if tab is hidden
         if (document.hidden) {
           showUnreadDot();
         }
@@ -84,24 +100,25 @@
       function sendMessage() {
         var text = document.getElementById("msg").value;
         if (text.trim() !== "") {
-          socket.emit("client_message", {user: username, text: text});
+          socket.emit("client_message", { user: username, text: text });
           document.getElementById("msg").value = "";
         }
       }
 
-      window.onload = function() {
-        // Enable Enter key for sending
-        var input = document.getElementById("msg");
-        input.addEventListener("keydown", function(event) {
-          if (event.key === "Enter") {
-            event.preventDefault();
-            sendMessage();
-          }
-        });
+      window.onload = function () {
+        // Handle Enter to send (Shift+Enter = newline)
+        document
+          .getElementById("msg")
+          .addEventListener("keydown", function (event) {
+            if (event.key === "Enter" && !event.shiftKey) {
+              event.preventDefault();
+              sendMessage();
+            }
+          });
       };
 
       // Hide unread dot when user returns to the tab
-      document.addEventListener("visibilitychange", function() {
+      document.addEventListener("visibilitychange", function () {
         if (!document.hidden) {
           hideUnreadDot();
         }
@@ -116,16 +133,21 @@
       </div>
     </div>
 
-    <div style="margin:20px;">
+    <div style="margin: 20px">
       <label>Set your name: </label>
-      <input type="text" id="username" placeholder="Enter name">
+      <input type="text" id="username" placeholder="Enter name" />
       <button onclick="setName()">Save</button>
     </div>
 
     <div id="chat"></div>
 
     <div class="input-area">
-      <input type="text" id="msg" placeholder="Type message...">
+      <textarea
+        id="msg"
+        placeholder="Type message..."
+        rows="3"
+        style="width: 100%"
+      ></textarea>
       <button onclick="sendMessage()">Send</button>
     </div>
   </body>
