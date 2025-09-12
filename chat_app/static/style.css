@@ -196,14 +196,62 @@ html, body {
   word-wrap: break-word;
 }
 
-footer {
-  text-align: center;
-  padding: 12px 0;
-  font-size: 12px;
-  color: #777;
-  border-top: 1px solid #333;
-  margin-top: 20px;
+/* AI messages */
+.ai {
+  background-color: #263238; /* bluish grey */
+  align-self: flex-start;
+  color: #e0e0e0;
+  border-radius: 12px 12px 12px 4px;
+  margin: 6px 0;
+  padding: 10px 14px;
+  max-width: 70%;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  font-size: 14px;
+  animation: fadeIn 0.2s ease;
 }
+
+/* AI thinking bubble */
+.ai-thinking {
+  background-color: #263238;
+  align-self: flex-start;
+  color: #a0a0a0;
+  border-radius: 12px 12px 12px 4px;
+  margin: 6px 0;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  font-style: italic;
+}
+
+/* Dots animation */
+.ai-thinking .dot {
+  height: 6px;
+  width: 6px;
+  margin: 0 2px;
+  background-color: #a0a0a0;
+  border-radius: 50%;
+  display: inline-block;
+  animation: blink 1.4s infinite both;
+}
+
+.ai-thinking .dot:nth-child(1) {
+  animation-delay: 0s;
+}
+.ai-thinking .dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.ai-thinking .dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes blink {
+  0% { opacity: 0.2; transform: translateY(0); }
+  20% { opacity: 1; transform: translateY(-2px); }
+  40% { opacity: 0.2; transform: translateY(0); }
+}
+
 
 /* Fade-in animation */
 @keyframes fadeIn {
