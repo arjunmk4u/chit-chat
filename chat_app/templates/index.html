@@ -4,9 +4,21 @@
   <meta charset="UTF-8" />
   <title>Chit - Chat Live</title>
   <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+
+  <!-- Style -->
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+
+  <!-- Markdown + Highlighting -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs/prism.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs/components/prism-python.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs/components/prism-bash.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs/themes/prism-tomorrow.css">
+
+  <!-- Your script -->
   <script src="{{ url_for('static', filename='script.js') }}" defer></script>
 </head>
+
 <body>
   <!-- Navbar -->
   <div class="navbar">

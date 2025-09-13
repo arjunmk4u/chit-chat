@@ -72,10 +72,32 @@ function appendMessage(user, text, sender) {
   const chat = document.getElementById("chat");
   const div = document.createElement("div");
   div.className = `msg ${sender}`;
-  div.innerHTML = `<div class="msg-user">${escapeHTML(user)}</div><div class="msg-content">${escapeHTML(text)}</div>`;
+
+  let contentHTML;
+
+  if (sender === "ai") {
+    // Render AI messages with markdown
+    contentHTML = marked.parse(text || "");
+  } else {
+    // Escape user/server messages to prevent HTML injection
+    contentHTML = escapeHTML(text || "");
+  }
+
+  div.innerHTML = `
+    <div class="msg-user">${escapeHTML(user)}</div>
+    <div class="msg-content">${contentHTML}</div>
+  `;
+
   chat.appendChild(div);
+
+  // Highlight code blocks only in AI messages
+  if (sender === "ai") {
+    Prism.highlightAllUnder(div);
+  }
+
   scrollToBottom();
 }
+
 
 // socket listeners
 socket.on("connect", () => {

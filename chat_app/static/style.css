@@ -77,16 +77,14 @@ html, body {
 
 /* Messages */
 .msg {
-  margin: 6px 0;
-  padding: 10px 14px;
-  border-radius: 12px;
-  max-width: 70%;
-  word-wrap: break-word;
-  white-space: pre-wrap;
-  display: inline-block;
-  line-height: 1.4;
-  font-size: 14px;
-  animation: fadeIn 0.2s ease;
+  background: #3a3a3a;
+  border-radius: 10px;
+  padding: 6px 10px;
+  margin: 6px;
+  max-width: 60%;
+  display: flex;
+  flex-direction: column;   /* Stack username above message */
+  align-items: flex-start;  /* Align text to left */
 }
 
 /* Server messages (left) */
@@ -184,17 +182,53 @@ html, body {
 }
 
 .msg-user {
-  font-weight: 600;
-  font-size: 12px;
+  font-size: 0.8rem;
+  font-weight: bold;
   margin-bottom: 4px;
-  color: #a0a0a0; /* lighter than message content */
+  color: #bbb;
 }
 
+/* Ensure normal text wraps properly */
 .msg-content {
-  white-space: pre-wrap;
-  line-height: 1.4;
-  word-wrap: break-word;
+  white-space: pre-wrap;   /* wrap long lines */
+  word-break: break-word;  /* break long words if needed */
+  overflow-x: auto;        /* horizontal scroll for code */
+  max-width: 100%;         /* stay inside container */
+  box-sizing: border-box;  /* prevent overflow from padding */
 }
+
+/* Special rule for code blocks */
+.msg-content pre,
+.msg-content code {
+  white-space: pre;        /* keep formatting */
+  overflow-x: auto;        /* add horizontal scroll */
+  display: block;
+  max-width: 100%;
+}
+
+
+/* AI thinking message wrapper */
+.msg.ai-thinking {
+  display: flex;
+  flex-direction: column;   /* username on top, bubble below */
+  align-items: flex-start;  /* align left, shrink width */
+  width: auto;              /* no forced full width */
+  max-width: 70%;           /* cap size like normal messages */
+  margin: 6px 12px;
+  background: transparent;  /* no background for wrapper */
+  box-shadow: none;
+}
+
+/* AI bubble itself */
+.msg.ai-thinking .msg-content {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #444;
+  padding: 8px 12px;
+  border-radius: 12px;
+}
+
 
 /* AI messages */
 .ai {
@@ -211,34 +245,32 @@ html, body {
   animation: fadeIn 0.2s ease;
 }
 
-/* AI thinking bubble */
+/* Let AI thinking bubble shrink to content */
 .ai-thinking {
-  background-color: #263238;
-  align-self: flex-start;
-  color: #a0a0a0;
-  border-radius: 12px 12px 12px 4px;
-  margin: 6px 0;
-  padding: 10px 14px;
-  display: flex;
-  align-items: center;
-  font-size: 14px;
-  font-style: italic;
+  display: inline-block;       /* shrink-wrap the content */
+  max-width: 70%;              /* don’t exceed chat width */
+  margin: 4px 8px;             /* spacing like normal messages */
 }
 
-/* Dots animation */
+.ai-thinking .msg-content {
+  display: inline-flex;        /* shrink horizontally */
+  align-items: center;
+  gap: 6px;
+  background: #444;            /* same style as messages */
+  padding: 8px 12px;
+  border-radius: 12px;
+}
+
+
 .ai-thinking .dot {
-  height: 6px;
-  width: 6px;
-  margin: 0 2px;
-  background-color: #a0a0a0;
+  width: 8px;
+  height: 8px;
+  background-color: #ccc;
   border-radius: 50%;
   display: inline-block;
   animation: blink 1.4s infinite both;
 }
 
-.ai-thinking .dot:nth-child(1) {
-  animation-delay: 0s;
-}
 .ai-thinking .dot:nth-child(2) {
   animation-delay: 0.2s;
 }
@@ -247,10 +279,16 @@ html, body {
 }
 
 @keyframes blink {
-  0% { opacity: 0.2; transform: translateY(0); }
-  20% { opacity: 1; transform: translateY(-2px); }
-  40% { opacity: 0.2; transform: translateY(0); }
+  0%, 80%, 100% {
+    opacity: 0.2;
+    transform: scale(0.8);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
+
 
 
 /* Fade-in animation */
