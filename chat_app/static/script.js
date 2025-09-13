@@ -1,94 +1,128 @@
-var socket = io();
-var username = "Anonymous";
-var unreadCount = 0;
-var originalTitle = document.title;
+// static/script.js
+const socket = io();
+let username = "Anonymous";
+let unreadCount = 0;
+const originalTitle = document.title;
 
-// Escape HTML to display literally
 function escapeHTML(str) {
-  return str
+  return (str || "")
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;");
 }
 
-// Set or update username
+function scrollToBottom() {
+  const chat = document.getElementById("chat");
+  chat.scrollTop = chat.scrollHeight;
+}
+
 function setName() {
-  var nameInput = document.getElementById("username").value.trim();
-  if (nameInput !== "") {
-    username = nameInput;
-  } else {
-    username = "Anonymous";
-  }
-  // Update status text below navbar
-  var statusDiv = document.getElementById("chat-status");
-  if (statusDiv) {
-    statusDiv.textContent = `You're currently chatting as: ${username}`;
-  }
+  const input = document.getElementById("username");
+  username = (input && input.value.trim()) || "Anonymous";
+  const statusDiv = document.getElementById("chat-status");
+  if (statusDiv) statusDiv.textContent = `You're currently chatting as: ${username}`;
 }
 
-// Update document title for unread messages
 function updateTitle() {
-  if (unreadCount > 0) {
-    document.title = `(${unreadCount}) Chit Live`;
-  } else {
-    document.title = originalTitle;
-  }
+  document.title = unreadCount > 0 ? `(${unreadCount}) Chit Live` : originalTitle;
 }
 
-// Send chat message
 function sendMessage() {
-  var text = document.getElementById("msg").value;
-  if (text.trim() !== "") {
-    socket.emit("client_message", { user: username, text: text });
-    document.getElementById("msg").value = "";
+  const msgBox = document.getElementById("msg");
+  const text = (msgBox.value || "").trim();
+  if (!text) return;
+  socket.emit("client_message", { user: username, text });
+  msgBox.value = "";
+}
+
+// Create a thinking bubble with a temp id (so multiple AIs concurrently are supported)
+function showThinking(temp_id) {
+  if (!temp_id) temp_id = "default";
+  const id = `ai-thinking-${temp_id}`;
+  if (document.getElementById(id)) return;
+
+  const chat = document.getElementById("chat");
+  const thinking = document.createElement("div");
+  thinking.classList.add("msg", "ai-thinking");
+  thinking.id = id;
+
+  thinking.innerHTML = `
+    <div class="msg-user">CoderBot</div>
+    <div class="msg-content">
+      <span class="dot"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+    </div>
+  `;
+  chat.appendChild(thinking);
+  scrollToBottom();
+}
+
+function removeThinking(temp_id) {
+  if (temp_id) {
+    const el = document.getElementById(`ai-thinking-${temp_id}`);
+    if (el) el.remove();
+  } else {
+    // remove any thinking bubbles
+    document.querySelectorAll(".ai-thinking").forEach(e => e.remove());
   }
 }
 
-// Run after DOM loaded
-window.onload = function () {
-  var msgBox = document.getElementById("msg");
-  var usernameInput = document.getElementById("username");
+function appendMessage(user, text, sender) {
+  const chat = document.getElementById("chat");
+  const div = document.createElement("div");
+  div.className = `msg ${sender}`;
+  div.innerHTML = `<div class="msg-user">${escapeHTML(user)}</div><div class="msg-content">${escapeHTML(text)}</div>`;
+  chat.appendChild(div);
+  scrollToBottom();
+}
 
-  // Handle Enter key (Shift+Enter for newline)
-  msgBox.addEventListener("keydown", function (event) {
-    if (event.key === "Enter" && !event.shiftKey) {
-      event.preventDefault();
+// socket listeners
+socket.on("connect", () => {
+  console.log("connected to socket server");
+});
+
+socket.on("ai_thinking", (data) => {
+  showThinking(data && data.temp_id);
+});
+
+socket.on("chat_message", (data) => {
+  // If it's from AI, remove the related thinking bubble first
+  if (data.sender === "ai") {
+    removeThinking(data.temp_id);
+    appendMessage(data.user || "CoderBot", data.text || "", "ai");
+  } else {
+    appendMessage(data.user || "Anonymous", data.text || "", data.sender || "server");
+  }
+
+  if (document.hidden) {
+    unreadCount++;
+    updateTitle();
+  }
+});
+
+// visibilitychange -> reset unread
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) {
+    unreadCount = 0;
+    updateTitle();
+  }
+});
+
+// DOM ready setup
+window.addEventListener("DOMContentLoaded", () => {
+  const msgBox = document.getElementById("msg");
+  const nameInput = document.getElementById("username");
+
+  // Enter to send, Shift+Enter newline
+  msgBox.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
       sendMessage();
     }
   });
 
-  // Update username dynamically as user types
-  usernameInput.addEventListener("input", setName);
+  nameInput.addEventListener("input", setName);
 
-  // Receive messages
-  socket.on("chat_message", function (data) {
-    const chat = document.getElementById("chat");
-    const div = document.createElement("div");
-    div.className = "msg " + data.sender;
-
-    const safeUser = escapeHTML(data.user);
-    const safeText = escapeHTML(data.text);
-
-    // Username on top, message content below
-    div.innerHTML = `<div class="msg-user">${safeUser}</div><div class="msg-content">${safeText}</div>`;
-
-    chat.appendChild(div);
-    chat.scrollTop = chat.scrollHeight;
-
-    if (document.hidden) {
-      unreadCount++;
-      updateTitle();
-    }
-  });
-
-  // Reset unread count when tab is visible
-  document.addEventListener("visibilitychange", function () {
-    if (!document.hidden) {
-      unreadCount = 0;
-      updateTitle();
-    }
-  });
-
-  // Initialize status text
   setName();
-};
+});

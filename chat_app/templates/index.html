@@ -1,44 +1,39 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>Chit - Chat Live</title>
-    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='style.css') }}"
-    />
-    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
-  </head>
-  <body>
-    <div class="navbar">
-      <div class="nav-title">Chit - Chat Live</div>
-
-      <div class="navbar-user">
-        <input type="text" id="username" placeholder="Enter name" />
-        <button class="send-btn" onclick="setName()">💾</button>
-        <!-- save icon optional -->
-      </div>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Chit - Chat Live</title>
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+</head>
+<body>
+  <!-- Navbar -->
+  <div class="navbar">
+    <div class="nav-title">Chit - Chat Live</div>
+    <div class="navbar-user">
+      <input type="text" id="username" placeholder="Enter name" />
+      <button class="send-btn" onclick="setName()">💾</button>
     </div>
+  </div>
 
-    <!-- Status text below navbar -->
-    <div
-      id="chat-status"
-      style="text-align: center; margin: 8px auto; color: #aaa"
-    >
-      You're currently chatting as: Anonymous
-    </div>
+  <!-- Status text -->
+  <div id="chat-status">
+    You're currently chatting as: Anonymous
+  </div>
 
-    <!-- Chat messages -->
-    <div id="chat"></div>
+  <!-- Chat area -->
+  <div id="chat"></div>
 
-    <!-- Message input area -->
-    <div class="input-area">
-      <textarea id="msg" placeholder="Type message..." rows="3"></textarea>
-      <button class="send-btn" onclick="sendMessage()">&#9658;</button>
-      <!-- right-arrow icon -->
-    </div>
-  </body>
+  <!-- Input area -->
+  <div class="input-area">
+    <textarea id="msg" placeholder="Type message..." rows="1"></textarea>
+    <button class="send-btn" onclick="sendMessage()">&#9658;</button>
+  </div>
+
+  <!-- Footer -->
   <footer>
     Made by deee.yesss (For educational purpose only..)
   </footer>
+</body>
 </html>
