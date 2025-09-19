@@ -278,6 +278,18 @@ html, body {
   animation-delay: 0.4s;
 }
 
+footer{
+  /* background-color: #222; */
+  color: #f1f1f1;             /* light text */
+  text-align: center;         /* center text */
+  padding: 15px 10px;         /* spacing */
+  font-size: 14px;            /* smaller text */
+  position: fixed;            /* stick to bottom */
+  bottom: 0;
+  left: 0;
+  width: 100%;
+}
+
 @keyframes blink {
   0%, 80%, 100% {
     opacity: 0.2;

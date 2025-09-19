@@ -12,8 +12,8 @@ app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
 
 OLLAMA_URL = "http://localhost:11434/api/chat"
-# OLLAMA_MODEL = "deepseek-coder:1.3b"
-OLLAMA_MODEL = "dolphin-mistral:latest"
+OLLAMA_MODEL = "deepseek-coder:1.3b"
+# OLLAMA_MODEL = "dolphin-mistral:latest"
 
 @app.route("/")
 def index():
