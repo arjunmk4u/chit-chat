@@ -83,5 +83,5 @@ def get_ip():
 if __name__ == "__main__":
     threading.Thread(target=console_input_thread, daemon=True).start()
     host_ip = get_ip()
-    print(f"🌐 Server running at: http://{host_ip}:8017")
+    print(f"🌐 Server running at: http://{host_ip}:5000")
     socketio.run(app, host=host_ip, port=8017, debug=True)
